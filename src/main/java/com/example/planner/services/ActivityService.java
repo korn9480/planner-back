@@ -6,6 +6,7 @@ import java.util.Arrays;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.http.HttpStatus;
 
 import com.example.planner.form.ActivityForm;
 import com.example.planner.models.Activity;
@@ -24,25 +25,63 @@ public class ActivityService {
         // }
         return todoList;
     }
-    public void create(ActivityForm form){
-        if (form.getName()!="" && form.getDate()!=null){
-            Activity activity = new Activity();
-            activity.setName(form.getName());
-            activity.setDate(form.getDate());
-            activityRepositorie.save(activity);
+    public HttpStatus create(ActivityForm form){
+        boolean result = this.checkDate(form.getDate());
+        if (result){
+            if (!form.getName().isEmpty()){
+                form.setDate(form.getDate().replace("/", "-"));
+                Activity activity = new Activity();
+                activity.setName(form.getName());
+                activity.setDate(form.getDate());
+                activityRepositorie.save(activity);
+                return HttpStatus.OK;
+
+            }
         }
+        return HttpStatus.FAILED_DEPENDENCY;
+
     }
-    public void update(ActivityForm form){
-        System.out.println(form.getName());
-        if (form.getName()!="" && form.getDate()!=""){
-            Activity activity = new Activity();
-            activity.setId(form.getId());
-            activity.setName(form.getName());
-            activity.setDate(form.getDate());
-            activityRepositorie.save(activity);
+    public HttpStatus update(ActivityForm form){
+        // System.out.println(form.getName());
+        boolean result = this.checkDate(form.getDate());
+        if (result){
+            if (!form.getName().isEmpty()){
+                form.setDate(form.getDate().replace("/", "-"));
+                Activity activity = new Activity();
+                activity.setId(form.getId());
+                activity.setName(form.getName());
+                activity.setDate(form.getDate());
+                activityRepositorie.save(activity);
+                return HttpStatus.OK;
+            }
         }
+        return HttpStatus.FAILED_DEPENDENCY;
     }
     public void delete(int id){
         activityRepositorie.deleteById(id);
+    }
+
+    public boolean checkDate(String date_str){
+        date_str = date_str.replace("/", "-");
+        String[] dateArray = date_str.split("-");
+        if(dateArray.length == 3){
+            int day = Integer.parseInt(dateArray[0]);
+            if (day<1 || day>31){
+                return false;
+            }
+            int month = Integer.parseInt(dateArray[1]);
+            if (month<1 || month>12){
+                return false;
+            }
+            int year = Integer.parseInt(dateArray[2]);
+            if (year<1){
+                return false;
+            }
+            return true;
+
+        }
+        else{
+            return false;
+        }
     }
 }
