@@ -20,7 +20,7 @@ public class TestCreate{
         int activity = obj.get().size();
         ActivityForm form = new ActivityForm();
         form.setName("eat food");
-        form.setDate("2023-2-21");
+        form.setDate("21-3-2021");
         obj.create(form);
         assertEquals(obj.get().size(), activity+1);
     }
@@ -29,7 +29,7 @@ public class TestCreate{
         int activity = obj.get().size();
         ActivityForm form = new ActivityForm();
         // form.setName("eat food");
-        form.setDate("2023-2-21");
+        form.setDate("21-3-2021");
         obj.create(form);
         assertEquals(obj.get().size(), activity);
 
